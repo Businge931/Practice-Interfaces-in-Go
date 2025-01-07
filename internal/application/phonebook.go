@@ -73,8 +73,11 @@ func (s *PhonebookService) DeleteContact(id string) (bool, string) {
 }
 
 func (s *PhonebookService) ValidateContact(contact domain.Contact) error {
-	if contact.Name == "" || contact.Phone == "" {
-		return domain.ErrInvalidContact
+	if contact.Name == ""  {
+		return domain.ErrInvalidContactName
+	}
+	if contact.Phone==""{
+		return domain.ErrInvalidContactNumber
 	}
 	return nil
 }
