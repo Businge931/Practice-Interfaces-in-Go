@@ -65,19 +65,19 @@ func main() {
 		log.Printf("Error retrieving contact: %v\n", msg)
 	}
 
-	// // 5. Delete the contact
-	// success, msg = phonebook.DeleteContact("contacts/johndoe")
-	// if success {
-	// 	log.Println("Contact deleted successfully")
-	// } else {
-	// 	log.Printf("Error deleting contact: %v\n", msg)
-	// }
+	// 5. Delete the contact
+	success, msg = phonebook.DeleteContact("contacts/johndoe")
+	if success {
+		log.Println("Contact deleted successfully")
+	} else {
+		log.Printf("Error deleting contact: %v\n", msg)
+	}
 
-	// // 6. Try to read the deleted contact (should fail)
-	// success, msg, _ = phonebook.GetContact("contacts/johndoe")
-	// if !success {
-	// 	log.Printf("As expected, contact not found: %v\n", msg)
-	// } else {
-	// 	log.Println("Error: Contact still exists after deletion!")
-	// }
+	// 6. Try to read the deleted contact (should fail)
+	success, msg, _ = phonebook.GetContact("contacts/johndoe")
+	if !success {
+		log.Printf("As expected, contact not found: %v\n", msg)
+	} else {
+		log.Println("Error: Contact still exists after deletion!")
+	}
 }
