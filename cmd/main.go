@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
-	"path/filepath"
+	// "os"
+	// "path/filepath"
 
 	log "github.com/sirupsen/logrus"
 
@@ -12,32 +12,66 @@ import (
 )
 
 func main() {
+	// Choose one of the following database implementations:
 
-	homeDir, err := os.UserHomeDir()
+	// // 1. Filesystem Database
+	// homeDir, err := os.UserHomeDir()
+	// if err != nil {
+	// 	log.Fatalf("Failed to get home directory: %v", err)
+	// }
+	// fsDb := database.NewFileSystemDatabase(filepath.Join(homeDir, "data"))
+
+	// // 2. In-Memory Database
+	// memDb := database.NewInMemoryDatabase()
+
+	// 3. PostgreSQL Database
+	pgDb, err := database.NewPostgresDatabase("postgres://user:pass@localhost:5432/phonebook?sslmode=disable")
 	if err != nil {
-		log.Fatalf("Failed to get home directory: %v", err)
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	// Initialize the database adapter (driven adapter)
-	db := database.NewFileSystemDatabase(filepath.Join(homeDir, "data"))
+	defer pgDb.Close()
 
-	// db:=database.NewInMemoryDatabase()
+	// // 4. MongoDB Database
+	// // Using authentication credentials from docker-compose
+	// mongoDb, err := database.NewMongoDatabase(
+	// 	"mongodb://user:pass@localhost:27017/phonebook",
+	// 	"phonebook",
+	// 	"contacts",
+	// )
+	// if err != nil {
+	// 	log.Fatalf("Failed to connect to MongoDB: %v", err)
+	// }
+	// defer mongoDb.Close()
 
+	// // 5. Google Cloud Firestore Database
+	// firestoreDb, err := database.NewFirestoreDatabase(
+	// 	"your-project-id",           // To be replace with my GCP project ID
+	// 	"contacts",                  // Collection name
+	// 	"path/to/credentials.json",  // To be replace with path to my service account key file
+	// )
+	// if err != nil {
+	// 	log.Fatalf("Failed to connect to Firestore: %v", err)
+	// }
+	// defer firestoreDb.Close()
 
-	//Initialize in application layer
+	// Use one of the database implementations
+	db := pgDb // or memDb, pgDb, mongoDb, firestoreDb
+
+	// Initialize application layer
 	phonebook := application.NewPhonebookService(db)
 
 	// Example usage
 	contact := domain.Contact{
-		Name:    "John Doeson",
+		Name:    "John Doe",
 		Phone:   "123-456-7890",
 		Email:   "johndoe@example.com",
-		Address: "Bukoto",
+		Address: "123 Main St",
 	}
 
-	// create a new contact
-	hasAdded, phoneNumber := phonebook.AddContact("contacts/johndoe.json", contact)
-	if !hasAdded {
-		log.Printf("Error adding contact: %v\n", phoneNumber)
+	// Create a new contact
+	success, msg := phonebook.AddContact("contacts/johndoe.json", contact)
+	if !success {
+		log.Printf("Error adding contact: %v\n", msg)
 	} else {
 		log.Println("Contact added successfully")
 	}
@@ -48,27 +82,5 @@ func main() {
 		log.Printf("Retrieved contact: %+v\n", retrievedContact)
 	} else {
 		log.Printf("Error retrieving contact: %v\n", msg)
-	}
-
-	// Update the contact
-	updatedContact := domain.Contact{
-		Name:    "John Doe",
-		Phone:   "123-456-7890",
-		Email:   "johndoe@example.com",
-		Address: "Bukoto",
-	}
-	success, msg = phonebook.UpdateContact("contacts/johndoe.json", updatedContact)
-	if success {
-		log.Println("Contact updated successfully")
-	} else {
-		log.Printf("Error updating contact: %v\n", msg)
-	}
-
-	// Delete the contact
-	success, msg = phonebook.DeleteContact("contacts/johndoe.json")
-	if success {
-		log.Println("Contact deleted successfully")
-	} else {
-		log.Printf("Error deleting contact: %v\n", msg)
 	}
 }
