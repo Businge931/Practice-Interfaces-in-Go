@@ -2,7 +2,8 @@ APP = practice-interfaces
 GOBASE = $(shell pwd)
 GOBIN = $(GOBASE)/build/bin
 LINT_PATH = $(GOBASE)/build/lint
-TEST_PATH = $(GOBASE)/service
+GORUN = $(GOBASE)/cmd
+# TEST_PATH = $(GOBASE)/service
 
 ###  mockgen -source=producer/producer.go -destination=producer/mocks/mock_producer.go -package=mocks
 
@@ -16,7 +17,7 @@ deps: ## Fetch required dependencies
 	go mod download
 
 run: build ## Build and run program
-	$(GOBIN)/$(APP)
+	cd $(GORUN) && go run .
 
 lint: install-golangci ## Linter for developers
 	$(LINT_PATH)/golangci-lint run --timeout=5m -c .golangci.yml
